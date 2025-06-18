@@ -9,23 +9,52 @@ import ActivityFeed from "@/components/activity-feed";
 import AnalyticsPanel from "@/components/analytics-panel";
 import { Rocket, Users, Heart, Calendar } from "lucide-react";
 
+// ✅ Improved type definitions
+interface SocialAccount {
+  id: string;
+  platform: string;
+  username: string;
+  followers: number;
+}
+
+interface Settings {
+  stealthMode: boolean;
+  notificationsEnabled: boolean;
+}
+
 interface Stats {
   totalFollowers?: number;
   engagementRate?: string;
   scheduledPosts?: number;
 }
+
+interface Activity {
+  timestamp: string;
+  message: string;
+}
+
 interface DashboardData {
-  socialAccounts: any[];
-  settings: any;
+  socialAccounts: SocialAccount[];
+  settings: Settings;
   stats: Stats;
-  activities: any[];
+  activities: Activity[];
   scheduledPosts: number;
 }
 
 export default function Dashboard() {
-  const { data: dashboardData, isLoading } = useQuery<DashboardData>({
+  const {
+    data: dashboardData,
+    isLoading,
+    error,
+  } = useQuery<DashboardData>({
     queryKey: ["/api/dashboard"],
-    queryFn: () => fetch("/api/dashboard").then(res => res.json()),
+    queryFn: async () => {
+      const res = await fetch("/api/dashboard");
+      if (!res.ok) throw new Error("Failed to load dashboard data");
+      return res.json();
+    },
+    retry: 2,
+    staleTime: 1000 * 60,
   });
 
   if (isLoading) {
@@ -38,18 +67,27 @@ export default function Dashboard() {
     );
   }
 
+  if (error) {
+    return (
+      <div className="text-red-600 text-center py-4">
+        Error loading dashboard. Please try again later.
+      </div>
+    );
+  }
+
   const stats = dashboardData?.stats || {};
   const settings = dashboardData?.settings;
   const activities = dashboardData?.activities || [];
   const isStealthMode = settings?.stealthMode || false;
 
+  // ✅ Console override in stealth mode
   React.useEffect(() => {
     if (isStealthMode) {
       const originalConsole = {
         log: console.log,
         warn: console.warn,
         error: console.error,
-        info: console.info
+        info: console.info,
       };
 
       console.log = () => {};
@@ -64,7 +102,11 @@ export default function Dashboard() {
   }, [isStealthMode]);
 
   return (
-    <div className={`bg-slate-50 font-sans text-slate-900 min-h-screen ${isStealthMode ? 'stealth-mode' : ''}`}>
+    <div
+      className={`bg-slate-50 font-sans text-slate-900 min-h-screen ${
+        isStealthMode ? "stealth-mode" : ""
+      }`}
+    >
       {/* Header */}
       <header className="gradient-header text-white shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -75,7 +117,9 @@ export default function Dashboard() {
               </div>
               <div>
                 <h1 className="text-xl font-bold">Influence Engine</h1>
-                <p className="text-slate-300 text-sm">Social Media Management Suite</p>
+                <p className="text-slate-300 text-sm">
+                  Social Media Management Suite
+                </p>
               </div>
             </div>
             <div className="hidden md:flex items-center space-x-4">
@@ -96,7 +140,9 @@ export default function Dashboard() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Dashboard Overview */}
         <div className="mb-8 animate-fade-in">
-          <h2 className="text-2xl font-bold text-slate-900 mb-6">Dashboard Overview</h2>
+          <h2 className="text-2xl font-bold text-slate-900 mb-6">
+            Dashboard Overview
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <StatsCard
               title="Total Followers"
@@ -141,7 +187,9 @@ export default function Dashboard() {
           {/* Right Column */}
           <div className="space-y-8">
             <StealthMode settings={settings} />
-            {!isStealthMode && <AnalyticsPanel stats={stats} isStealthMode={isStealthMode} />}
+            {!isStealthMode && (
+              <AnalyticsPanel stats={stats} isStealthMode={isStealthMode} />
+            )}
             {!isStealthMode && <AdminPanel />}
           </div>
         </div>

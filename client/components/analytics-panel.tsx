@@ -1,10 +1,19 @@
 import React from "react";
 
-export default function AnalyticsPanel({ stats, isStealthMode }: { stats: any, isStealthMode: boolean }) {
+interface AnalyticsPanelProps {
+  stats: any;
+  isStealthMode: boolean;
+}
+
+export default function AnalyticsPanel({ stats, isStealthMode }: AnalyticsPanelProps) {
+  if (isStealthMode) return null;
+
   return (
-    <div className="bg-white p-6 rounded-xl shadow-md">
-      <h3 className="text-lg font-semibold mb-2">Analytics</h3>
-      <p className="text-sm">Detailed performance analytics are currently {isStealthMode ? "disabled" : "enabled"}.</p>
+    <div className="p-4 bg-white rounded-xl shadow-md">
+      <h3 className="text-lg font-semibold mb-4">Analytics Summary</h3>
+      <p className="text-sm text-slate-600 mb-2">Follower growth: {stats?.totalFollowers || 0}</p>
+      <p className="text-sm text-slate-600 mb-2">Engagement rate: {stats?.engagementRate || "0%"}</p>
+      <p className="text-sm text-slate-600">Scheduled posts: {stats?.scheduledPosts || 0}</p>
     </div>
   );
 }

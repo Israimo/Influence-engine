@@ -1,42 +1,24 @@
-import React, { useState } from "react";
+import React from "react";
 
-export default function AdminPanel() {
-  const [pin, setPin] = useState("");
-  const [accessGranted, setAccessGranted] = useState(false);
+interface ActivityFeedProps {
+  activities: any[];
+}
 
-  const checkPin = () => {
-    if (pin === "2025") {
-      setAccessGranted(true);
-    } else {
-      alert("Invalid admin pin");
-    }
-  };
-
+export default function ActivityFeed({ activities }: ActivityFeedProps) {
   return (
     <div className="p-4 bg-white rounded-xl shadow-md">
-      <h3 className="text-lg font-semibold mb-2">Admin Panel</h3>
-      {!accessGranted ? (
-        <div className="space-y-2">
-          <input
-            type="password"
-            value={pin}
-            onChange={(e) => setPin(e.target.value)}
-            className="p-2 border rounded w-full"
-            placeholder="Enter admin PIN"
-          />
-          <button
-            onClick={checkPin}
-            className="bg-slate-800 text-white px-4 py-2 rounded"
-          >
-            Unlock
-          </button>
-        </div>
-      ) : (
-        <div>
-          <p className="text-success-600">Admin access granted!</p>
-          <p className="text-sm text-slate-500 mt-2">You can now access advanced settings.</p>
-        </div>
-      )}
+      <h3 className="text-lg font-semibold mb-4">Recent Activity</h3>
+      <ul className="space-y-2">
+        {activities.length > 0 ? (
+          activities.map((activity, index) => (
+            <li key={index} className="text-sm text-slate-700">
+              {activity.message || "New activity..."}
+            </li>
+          ))
+        ) : (
+          <li className="text-sm text-slate-400">No recent activity.</li>
+        )}
+      </ul>
     </div>
   );
 }

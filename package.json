@@ -6,7 +6,10 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "start": "vite"
+    "start": "vite",
+    "test": "jest",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@tanstack/react-query": "^4.29.9",
@@ -20,16 +23,12 @@
     "@types/react": "^18.0.38",
     "@types/react-dom": "^18.0.14",
     "typescript": "^5.3.3",
-    "vite": "^5.0.0"
-  }
-}
-{
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "jest",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "format": "prettier --write ."
+    "vite": "^5.0.0",
+    "react-scripts": "*",
+    "jest": "*",
+    "eslint": "*",
+    "prettier": "*",
+    "lint-staged": "*"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
